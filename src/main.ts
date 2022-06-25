@@ -9,7 +9,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
     arcade: {
       debug: true,
       gravity: {
-        y: 200,
+        y: 400,
       },
     },
   },
@@ -21,6 +21,8 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
 };
 
 let bird: Phaser.Physics.Arcade.Sprite;
+const FLAP_VELOCITY = 250;
+const VELOCITY = 200;
 
 function preload() {
   this.load.image('sky', 'assets/sky.png');
@@ -33,10 +35,17 @@ function create() {
   bird = this.physics.add
     .sprite((gameConfig.width as number) / 10, (gameConfig.height as number) / 2, 'bird')
     .setOrigin(0);
+  bird.body.velocity.x = VELOCITY;
+
+  this.input.keyboard.on('keyup-SPACE', flap);
 }
 
 function update() {
-  bird.body;
+  //
+}
+
+function flap() {
+  bird.body.velocity.y = -FLAP_VELOCITY;
 }
 
 export const game = new Phaser.Game(gameConfig);
