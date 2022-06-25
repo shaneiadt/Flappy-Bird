@@ -12,6 +12,8 @@ const gameConfig = {
 class PlayScene extends Phaser.Scene {
   bird: Phaser.Physics.Arcade.Sprite;
   pipes: Phaser.Physics.Arcade.Group;
+  scoreText: Phaser.GameObjects.Text;
+  score = 0;
 
   PIPES_TO_RENDER = 4;
   PIPE_VERITCAL_DISTANCE_RANGE = [150, 250];
@@ -43,6 +45,7 @@ class PlayScene extends Phaser.Scene {
     this.createPipes();
     this.createBird();
     this.createColliders();
+    this.createScore();
     this.handleInputs();
   };
 
@@ -79,6 +82,11 @@ class PlayScene extends Phaser.Scene {
 
   createColliders = (): void => {
     this.physics.add.collider(this.bird, this.pipes, this.gameOver);
+  };
+
+  createScore = (): void => {
+    this.score = 0;
+    this.scoreText = this.add.text(16, 16, `Score: ${0}`, { fontSize: '22px', color: '#000' });
   };
 
   createBg = (): void => {
@@ -129,11 +137,17 @@ class PlayScene extends Phaser.Scene {
     this.bird.body.velocity.y = -this.FLAP_VELOCITY;
   };
 
+  increaseScore = (): void => {
+    this.score++;
+    this.scoreText.setText(`Score: ${this.score}`);
+  };
+
   recyclePipes = (): void => {
     this.pipes.getChildren().forEach((pipe: Phaser.Physics.Arcade.Sprite, i) => {
       if (pipe.getBounds().right < 0) {
         const pipe2: Phaser.Physics.Arcade.Sprite = this.pipes.getChildren()[i + 1] as Phaser.Physics.Arcade.Sprite;
         this.placePipe(pipe, pipe2);
+        this.increaseScore();
       }
     });
   };
