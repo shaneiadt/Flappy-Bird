@@ -10,7 +10,6 @@ const gameConfig = {
 };
 
 class PlayScene extends Phaser.Scene {
-  initialPos: { x: number; y: number } = { x: 80, y: 300 };
   bird: Phaser.Physics.Arcade.Sprite = null;
   pipes;
 
@@ -18,9 +17,19 @@ class PlayScene extends Phaser.Scene {
   PIPE_VERITCAL_DISTANCE_RANGE = [150, 250];
   PIPE_HORIZONTAL_DISTANCE_RANGE = [500, 550];
   FLAP_VELOCITY = 250;
+  config: {
+    width: number;
+    height: number;
+    startPos: {
+      x: number;
+      y: number;
+    };
+  };
 
-  constructor() {
+  constructor(config: { width: number; height: number; startPos: { x: number; y: number } }) {
     super(sceneConfig);
+
+    this.config = config;
   }
 
   preload = (): void => {
@@ -43,7 +52,7 @@ class PlayScene extends Phaser.Scene {
 
     this.pipes.setVelocityX(-200);
 
-    this.bird = this.physics.add.sprite(this.initialPos.x, this.initialPos.y, 'bird').setOrigin(0);
+    this.bird = this.physics.add.sprite(this.config.startPos.x, this.config.startPos.y, 'bird').setOrigin(0);
     this.bird.body.gravity.y = 400;
 
     this.input.keyboard.on('keyup-SPACE', this.flap);
@@ -78,8 +87,8 @@ class PlayScene extends Phaser.Scene {
   };
 
   restart = (): void => {
-    this.bird.x = this.initialPos.x;
-    this.bird.y = this.initialPos.y;
+    this.bird.x = this.config.startPos.x;
+    this.bird.y = this.config.startPos.y;
     this.bird.body.velocity.y = 0;
   };
 
