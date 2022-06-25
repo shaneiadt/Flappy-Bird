@@ -1,4 +1,4 @@
-import { MenuButton } from '../ui/menu-button';
+import { MenuButton } from '../backup_ui/menu-button';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   active: false,
