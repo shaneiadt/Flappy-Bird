@@ -76,6 +76,14 @@ function placePipe(pipe1: Phaser.Physics.Arcade.Sprite, pipe2: Phaser.Physics.Ar
   pipe2.y = pipe1.y + pipeVerticalDistance;
 }
 
+function recyclePipes() {
+  pipes.getChildren().forEach((pipe, i) => {
+    if (pipe.getBounds().right < 0) {
+      placePipe(pipe, pipes.getChildren()[i + 1]);
+    }
+  });
+}
+
 function getRightMostPipe() {
   const children = pipes.getChildren();
 
@@ -92,6 +100,8 @@ function update() {
   if (bird.y < -bird.height || bird.y > (gameConfig.height as number)) {
     restart();
   }
+
+  recyclePipes();
 }
 
 function restart() {
