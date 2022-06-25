@@ -10,8 +10,8 @@ const gameConfig = {
 };
 
 class PlayScene extends Phaser.Scene {
-  bird: Phaser.Physics.Arcade.Sprite = null;
-  pipes;
+  bird: Phaser.Physics.Arcade.Sprite;
+  pipes: Phaser.Physics.Arcade.Group;
 
   PIPES_TO_RENDER = 4;
   PIPE_VERITCAL_DISTANCE_RANGE = [150, 250];
@@ -39,23 +39,11 @@ class PlayScene extends Phaser.Scene {
   };
 
   create = (): void => {
-    this.add.image(0, 0, 'sky').setOrigin(0);
-
-    this.pipes = this.physics.add.group();
-
-    for (let index = 0; index < this.PIPES_TO_RENDER; index++) {
-      const upperPipe: Phaser.Physics.Arcade.Sprite = this.pipes.create(0, 0, 'pipe').setOrigin(0, 1);
-      const lowerPipe: Phaser.Physics.Arcade.Sprite = this.pipes.create(0, 0, 'pipe').setOrigin(0, 0);
-
-      this.placePipe(upperPipe, lowerPipe);
-    }
-
-    this.pipes.setVelocityX(-200);
-
-    this.bird = this.physics.add.sprite(this.config.startPos.x, this.config.startPos.y, 'bird').setOrigin(0);
-    this.bird.body.gravity.y = 400;
-
-    this.input.keyboard.on('keyup-SPACE', this.flap);
+    this.createBg();
+    this.createPipes();
+    this.createBird();
+    this.createColliders();
+    this.handleInputs();
   };
 
   placePipe = (pipe1: Phaser.Physics.Arcade.Sprite, pipe2: Phaser.Physics.Arcade.Sprite): void => {
@@ -79,14 +67,47 @@ class PlayScene extends Phaser.Scene {
   };
 
   update = (): void => {
-    if (this.bird.y < -this.bird.height || this.bird.y > (gameConfig.height as number)) {
-      this.restart();
-    }
-
+    this.checkGameStatus();
     this.recyclePipes();
   };
 
-  restart = (): void => {
+  checkGameStatus = (): void => {
+    if (this.bird.y < -this.bird.height || this.bird.y > (gameConfig.height as number)) {
+      this.gameOver();
+    }
+  };
+
+  createColliders = (): void => {
+    this.physics.add.collider(this.bird, this.pipes, this.gameOver);
+  };
+
+  createBg = (): void => {
+    this.add.image(0, 0, 'sky').setOrigin(0);
+  };
+
+  createBird = (): void => {
+    this.bird = this.physics.add.sprite(this.config.startPos.x, this.config.startPos.y, 'bird').setOrigin(0);
+    this.bird.body.gravity.y = 400;
+  };
+
+  createPipes = (): void => {
+    this.pipes = this.physics.add.group();
+
+    for (let index = 0; index < this.PIPES_TO_RENDER; index++) {
+      const upperPipe: Phaser.Physics.Arcade.Sprite = this.pipes.create(0, 0, 'pipe').setOrigin(0, 1);
+      const lowerPipe: Phaser.Physics.Arcade.Sprite = this.pipes.create(0, 0, 'pipe').setOrigin(0, 0);
+
+      this.placePipe(upperPipe, lowerPipe);
+    }
+
+    this.pipes.setVelocityX(-200);
+  };
+
+  handleInputs = (): void => {
+    this.input.keyboard.on('keyup-SPACE', this.flap);
+  };
+
+  gameOver = (): void => {
     this.bird.x = this.config.startPos.x;
     this.bird.y = this.config.startPos.y;
     this.bird.body.velocity.y = 0;
@@ -99,13 +120,14 @@ class PlayScene extends Phaser.Scene {
   recyclePipes = (): void => {
     this.pipes.getChildren().forEach((pipe: Phaser.Physics.Arcade.Sprite, i) => {
       if (pipe.getBounds().right < 0) {
-        this.placePipe(pipe, this.pipes.getChildren()[i + 1]);
+        const pipe2: Phaser.Physics.Arcade.Sprite = this.pipes.getChildren()[i + 1] as Phaser.Physics.Arcade.Sprite;
+        this.placePipe(pipe, pipe2);
       }
     });
   };
 
   getRightMostPipe = (): number => {
-    const children = this.pipes.getChildren();
+    const children: Phaser.Physics.Arcade.Sprite[] = this.pipes.getChildren() as Phaser.Physics.Arcade.Sprite[];
 
     let rightMostX = 0;
 
