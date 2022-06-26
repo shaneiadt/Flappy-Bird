@@ -78,7 +78,7 @@ class PlayScene extends BaseScene {
         delay: 1000,
         callback: () => {
           if (initTime === 1) {
-            timedEvent.destroy();
+            timedEvent.remove();
             countDownText.destroy();
             this.physics.resume();
           } else {
