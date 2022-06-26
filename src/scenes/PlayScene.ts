@@ -1,15 +1,12 @@
+import BaseScene from './BaseScene';
+
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   active: false,
   visible: false,
   key: 'PlayScene',
 };
 
-const gameConfig = {
-  width: 800,
-  height: 600,
-};
-
-class PlayScene extends Phaser.Scene {
+class PlayScene extends BaseScene {
   bird: Phaser.Physics.Arcade.Sprite;
   pipes: Phaser.Physics.Arcade.Group;
   scoreText: Phaser.GameObjects.Text;
@@ -20,30 +17,13 @@ class PlayScene extends Phaser.Scene {
   PIPE_VERITCAL_DISTANCE_RANGE = [150, 250];
   PIPE_HORIZONTAL_DISTANCE_RANGE = [500, 550];
   FLAP_VELOCITY = 250;
-  config: {
-    width: number;
-    height: number;
-    startPos: {
-      x: number;
-      y: number;
-    };
-  };
 
   constructor(config: { width: number; height: number; startPos: { x: number; y: number } }) {
-    super(sceneConfig);
-
-    this.config = config;
+    super(sceneConfig.key, config);
   }
 
-  preload = (): void => {
-    this.load.image('sky', 'assets/sky.png');
-    this.load.image('bird', 'assets/bird.png');
-    this.load.image('pipe', 'assets/pipe.png');
-    this.load.image('pause', 'assets/pause.png');
-  };
-
   create = (): void => {
-    this.createBg();
+    super.create();
     this.createPipes();
     this.createBird();
     this.createPauseButton();
@@ -58,7 +38,10 @@ class PlayScene extends Phaser.Scene {
       this.PIPE_VERITCAL_DISTANCE_RANGE[0],
       this.PIPE_VERITCAL_DISTANCE_RANGE[1],
     );
-    const pipeVerticalPosition = Phaser.Math.Between(0 + 20, (gameConfig.height as number) - 20 - pipeVerticalDistance);
+    const pipeVerticalPosition = Phaser.Math.Between(
+      0 + 20,
+      (this.config.height as number) - 20 - pipeVerticalDistance,
+    );
 
     const pipeHorizontalDistance = Phaser.Math.Between(
       this.PIPE_HORIZONTAL_DISTANCE_RANGE[0],
@@ -84,10 +67,16 @@ class PlayScene extends Phaser.Scene {
   };
 
   createPauseButton = (): void => {
-    this.add
+    const pauseBtn = this.add
       .image(this.config.width - 10, this.config.height - 10, 'pause')
+      .setInteractive()
       .setScale(2)
       .setOrigin(1);
+
+    pauseBtn.on('pointerdown', () => {
+      this.physics.pause();
+      this.scene.pause();
+    });
   };
 
   createColliders = (): void => {
@@ -102,10 +91,6 @@ class PlayScene extends Phaser.Scene {
       fontSize: '16px',
       color: '#000',
     });
-  };
-
-  createBg = (): void => {
-    this.add.image(0, 0, 'sky').setOrigin(0);
   };
 
   createBird = (): void => {
