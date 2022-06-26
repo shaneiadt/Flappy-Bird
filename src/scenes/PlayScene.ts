@@ -13,6 +13,7 @@ class PlayScene extends Phaser.Scene {
   bird: Phaser.Physics.Arcade.Sprite;
   pipes: Phaser.Physics.Arcade.Group;
   scoreText: Phaser.GameObjects.Text;
+  bestScoreText: Phaser.GameObjects.Text;
   score = 0;
 
   PIPES_TO_RENDER = 4;
@@ -86,7 +87,12 @@ class PlayScene extends Phaser.Scene {
 
   createScore = (): void => {
     this.score = 0;
+    const bestLocalScore = localStorage.getItem('bestScore');
     this.scoreText = this.add.text(16, 16, `Score: ${0}`, { fontSize: '22px', color: '#000' });
+    this.bestScoreText = this.add.text(16, 46, `Best Score: ${bestLocalScore || 0}`, {
+      fontSize: '16px',
+      color: '#000',
+    });
   };
 
   createBg = (): void => {
@@ -125,6 +131,13 @@ class PlayScene extends Phaser.Scene {
   gameOver = (): void => {
     this.physics.pause();
     this.bird.setTint(0xff0000);
+
+    const bestScore = localStorage.getItem('bestScore');
+    const newBestScore = bestScore && parseInt(bestScore, 10);
+
+    if (!newBestScore || this.score > newBestScore) {
+      localStorage.setItem('bestScore', this.score.toString());
+    }
 
     this.time.addEvent({
       delay: 1000,
