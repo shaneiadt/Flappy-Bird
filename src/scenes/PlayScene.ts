@@ -39,12 +39,14 @@ class PlayScene extends Phaser.Scene {
     this.load.image('sky', 'assets/sky.png');
     this.load.image('bird', 'assets/bird.png');
     this.load.image('pipe', 'assets/pipe.png');
+    this.load.image('pause', 'assets/pause.png');
   };
 
   create = (): void => {
     this.createBg();
     this.createPipes();
     this.createBird();
+    this.createPauseButton();
     this.createColliders();
     this.createScore();
     this.handleInputs();
@@ -79,6 +81,13 @@ class PlayScene extends Phaser.Scene {
     if (this.bird.getBounds().bottom >= this.config.height || this.bird.y <= 0) {
       this.gameOver();
     }
+  };
+
+  createPauseButton = (): void => {
+    this.add
+      .image(this.config.width - 10, this.config.height - 10, 'pause')
+      .setScale(2)
+      .setOrigin(1);
   };
 
   createColliders = (): void => {
