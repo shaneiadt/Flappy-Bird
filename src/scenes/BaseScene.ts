@@ -6,10 +6,14 @@ class BaseScene extends Phaser.Scene {
       x: number;
       y: number;
     };
+    displayBackBtn?: boolean;
   };
   sceneCenter: number[];
 
-  constructor(key: string, config: { width: number; height: number; startPos: { x: number; y: number } }) {
+  constructor(
+    key: string,
+    config: { width: number; height: number; startPos: { x: number; y: number }; displayBackBtn?: boolean },
+  ) {
     super(key);
     this.config = config;
     this.sceneCenter = [config.width / 2, config.height / 2];
@@ -17,6 +21,18 @@ class BaseScene extends Phaser.Scene {
 
   create(): void {
     this.add.image(0, 0, 'sky').setOrigin(0);
+
+    if (this.config.displayBackBtn) {
+      const backBtn = this.add
+        .image(this.config.width - 10, this.config.height - 10, 'back')
+        .setInteractive()
+        .setScale(1.5)
+        .setOrigin(1, 1);
+
+      backBtn.on('pointerup', () => {
+        this.scene.start('MenuScene');
+      });
+    }
   }
 
   createMenu(

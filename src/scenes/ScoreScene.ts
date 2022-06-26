@@ -8,7 +8,7 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 
 class ScoreScene extends BaseScene {
   constructor(config: { width: number; height: number; startPos: { x: number; y: number } }) {
-    super(sceneConfig.key, config);
+    super(sceneConfig.key, { ...config, displayBackBtn: true });
   }
 
   create = (): void => {
