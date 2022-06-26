@@ -128,16 +128,20 @@ class PlayScene extends Phaser.Scene {
     this.input.keyboard.on('keyup-SPACE', this.flap);
   };
 
-  gameOver = (): void => {
-    this.physics.pause();
-    this.bird.setTint(0xff0000);
-
+  saveBestScore = (): void => {
     const bestScore = localStorage.getItem('bestScore');
     const newBestScore = bestScore && parseInt(bestScore, 10);
 
     if (!newBestScore || this.score > newBestScore) {
       localStorage.setItem('bestScore', this.score.toString());
     }
+  };
+
+  gameOver = (): void => {
+    this.physics.pause();
+    this.bird.setTint(0xff0000);
+
+    this.saveBestScore();
 
     this.time.addEvent({
       delay: 1000,
@@ -161,6 +165,7 @@ class PlayScene extends Phaser.Scene {
         const pipe2: Phaser.Physics.Arcade.Sprite = this.pipes.getChildren()[i + 1] as Phaser.Physics.Arcade.Sprite;
         this.placePipe(pipe, pipe2);
         this.increaseScore();
+        this.saveBestScore();
       }
     });
   };
