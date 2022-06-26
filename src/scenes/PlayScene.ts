@@ -30,6 +30,7 @@ class PlayScene extends BaseScene {
     this.createColliders();
     this.createScore();
     this.handleInputs();
+    this.listenToEvents();
   };
 
   placePipe = (pipe1: Phaser.Physics.Arcade.Sprite, pipe2: Phaser.Physics.Arcade.Sprite): void => {
@@ -64,6 +65,30 @@ class PlayScene extends BaseScene {
     if (this.bird.getBounds().bottom >= this.config.height || this.bird.y <= 0) {
       this.gameOver();
     }
+  };
+
+  listenToEvents = (): void => {
+    this.events.on('resume', () => {
+      let initTime = 3;
+      const countDownText = this.add
+        .text(this.config.width / 2, this.config.height / 2, `Fly in ${initTime}`, { fontSize: '32px' })
+        .setOrigin(0.5, 1);
+
+      const timedEvent = this.time.addEvent({
+        delay: 1000,
+        callback: () => {
+          if (initTime === 1) {
+            timedEvent.destroy();
+            countDownText.destroy();
+            this.physics.resume();
+          } else {
+            initTime--;
+            countDownText.setText(`Fly in ${initTime}`);
+          }
+        },
+        loop: true,
+      });
+    });
   };
 
   createPauseButton = (): void => {
