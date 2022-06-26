@@ -38,9 +38,15 @@ class MenuScene extends BaseScene {
   };
 
   setupMenuEvents = (menuItem: { text: string; scene: string }, text: Phaser.GameObjects.Text): void => {
-    text.on('pointerover', () => text.setColor('red'));
+    text.on('pointerover', () => text.setColor('yellow'));
     text.on('pointerout', () => text.setColor('white'));
-    text.on('pointerdown', () => this.scene.start(menuItem.scene));
+    text.on('pointerup', () => {
+      menuItem.scene && this.scene.start(menuItem.scene);
+
+      if (menuItem.text === 'Exit') {
+        this.game.destroy(true);
+      }
+    });
   };
 }
 
